@@ -4,17 +4,16 @@ import styled from "styled-components";
 interface Props {
   children: string;
   path: string;
+  params?: { size: number };
 }
-
-const CTABtn = ({ children, path }: Props) => {
+const CTABtn = ({ children, path, params }: Props) => {
   const navigate = useNavigate();
 
-  const goto = (path: string) => {
-    navigate(path);
+  const goto = (path: string, params?: { size: number }) => {
+    params ? navigate(path, { state: params }) : navigate(path);
   };
-
   return (
-    <Button type="button" onClick={() => goto(path)}>
+    <Button type="button" onClick={() => goto(path, params)}>
       <div className="text">{children}</div>
     </Button>
   );
@@ -24,11 +23,11 @@ const Button = styled.button`
   display: flex;
   padding: 10px 20px;
   margin: 10px 0;
-  font-size: 16px;
   border: none;
   border-radius: 5px;
   background-color: #1e3465;
   color: #fff;
+  font-size: 16px;
   cursor: pointer;
   transition: background-color 0.3s ease;
 
