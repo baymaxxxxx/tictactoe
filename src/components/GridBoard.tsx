@@ -7,15 +7,18 @@ import styled from "styled-components";
 
 interface Props {
   size: number;
+  player1color: string;
+  player2color: string;
 }
 type CellValue = "X" | "O" | "";
 type Player = "X" | "O";
 
-const GridBoard = ({ size }: Props) => {
+const GridBoard = ({ size, player1color, player2color }: Props) => {
   const [cells, setCells] = useState(Array(size * size).fill(""));
   const [currentPlayer, setCurrentPlayer] = useState<Player>("X");
   const [gameOver, setGameOver] = useState(false);
 
+  console.log("player1color", player1color, player2color);
   const checkGameOver = (
     cells: CellValue[],
     currentPlayer: Player,
@@ -67,7 +70,13 @@ const GridBoard = ({ size }: Props) => {
   return (
     <BoardContainer size={size}>
       {cells.map((value, index) => (
-        <Cell key={index} onClick={() => handleCellClick(index)}>
+        <Cell
+          key={index}
+          onClick={() => handleCellClick(index)}
+          value={value}
+          player1color={player1color}
+          player2color={player2color}
+        >
           {value}
         </Cell>
       ))}
@@ -82,11 +91,17 @@ const BoardContainer = styled.div<{ size: number }>`
   gap: 3px;
 `;
 
-const Cell = styled.button`
+const Cell = styled.button<{
+  player1color?: string;
+  player2color?: string;
+  value?: string;
+}>`
   display: flex;
   border-radius: 5px;
   background-color: #334e7e;
   font-size: 24px;
+  color: ${(props) =>
+    props.value === "X" ? props.player1color : props.player2color};
   justify-content: center;
   align-items: center;
   cursor: pointer;

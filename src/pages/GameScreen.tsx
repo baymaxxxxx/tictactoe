@@ -12,11 +12,17 @@ const GameScreen = () => {
   const location = useLocation();
   console.log("location", location.state);
   const boardSize = location.state.size;
+  const player1color = location.state.player1color;
+  const player2color = location.state.player2color;
   const size = parseInt(boardSize || "3");
   return (
     <>
       GameScreen
-      <GridBoard size={size}></GridBoard>
+      <GridBoard
+        size={size}
+        player1color={player1color}
+        player2color={player2color}
+      ></GridBoard>
       <CTABtn path={"/"}>홈</CTABtn>
     </>
   );

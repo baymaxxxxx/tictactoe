@@ -4,12 +4,15 @@ import styled from "styled-components";
 interface Props {
   children: string;
   path: string;
-  params?: { size: number };
+  params?: { size?: number; player1color?: string; player2color?: string };
 }
 const CTABtn = ({ children, path, params }: Props) => {
   const navigate = useNavigate();
 
-  const goto = (path: string, params?: { size: number }) => {
+  const goto = (
+    path: string,
+    params?: { size?: number; player1color?: string; player2color?: string }
+  ) => {
     params ? navigate(path, { state: params }) : navigate(path);
   };
   return (
