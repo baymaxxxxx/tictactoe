@@ -1,19 +1,25 @@
 import { useNavigate } from "react-router";
 import styled from "styled-components";
 
+interface Params {
+  size?: number;
+  player1color?: string;
+  player2color?: string;
+  user1Symbol?: string;
+  user2Symbol?: string;
+}
 interface Props {
   children: string;
   path: string;
-  params?: { size?: number; player1color?: string; player2color?: string };
+  params?: Params;
 }
+
 const CTABtn = ({ children, path, params }: Props) => {
   const navigate = useNavigate();
 
-  const goto = (
-    path: string,
-    params?: { size?: number; player1color?: string; player2color?: string }
-  ) => {
-    params ? navigate(path, { state: params }) : navigate(path);
+  const goto = (path: string, params?: Params) => {
+    // params ? navigate(path, { state: params }) : navigate(path);
+    navigate(path, params ? { state: params } : undefined);
   };
   return (
     <Button type="button" onClick={() => goto(path, params)}>

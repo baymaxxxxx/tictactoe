@@ -1,27 +1,32 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import styled from "styled-components";
-
-/** TODO:
- * 게임이 끝나면 종료표시
- */
-
 interface Props {
   size: number;
   player1color: string;
   player2color: string;
+  user1Symbol: string;
+  user2Symbol: string;
 }
-type CellValue = "X" | "O" | "";
-type Player = "X" | "O";
 
-const GridBoard = ({ size, player1color, player2color }: Props) => {
+const GridBoard = ({
+  size,
+  player1color,
+  player2color,
+  user1Symbol,
+  user2Symbol,
+}: Props) => {
   const [cells, setCells] = useState(Array(size * size).fill(""));
-  const [currentPlayer, setCurrentPlayer] = useState<Player>("X");
-  const [gameOver, setGameOver] = useState(false);
+  const [currentPlayer, setCurrentPlayer] = useState(user1Symbol);
+  const [gameOver, setGameOver] = useState<boolean>(false);
+  const [tie, setTie] = useState<boolean>(false);
 
-  console.log("player1color", player1color, player2color);
+  const checkTie = (cells: string[], size: number) => {
+    return cells.every((value) => value !== "") ? true : false;
+  };
+
   const checkGameOver = (
-    cells: CellValue[],
-    currentPlayer: Player,
+    cells: string[],
+    currentPlayer: string,
     size: number
   ) => {
     // 이어지는 줄을 확인하는 함수
@@ -45,6 +50,7 @@ const GridBoard = ({ size, player1color, player2color }: Props) => {
     if (checkLine(0, size + 1) || checkLine(size - 1, size - 1)) {
       return true;
     }
+
     // 어느 조건도 만족하지 않으면 false 반환
     return false;
   };
@@ -54,33 +60,48 @@ const GridBoard = ({ size, player1color, player2color }: Props) => {
 
     const newCells = [...cells];
     newCells[index] = currentPlayer;
-    // newCells[index] = "X";
     setCells(newCells);
 
     const winner = checkGameOver(newCells, currentPlayer, size);
-    if (winner) {
-      console.log(`${winner}, ${currentPlayer} wins!`);
-      setGameOver(true);
+    const tieGame = checkTie(newCells, size);
+
+    if (winner || tieGame) {
+      setGameOver(winner);
+      setTie(tieGame);
       return;
     }
-    setCurrentPlayer(currentPlayer === "X" ? "O" : "X");
+    setCurrentPlayer(currentPlayer === user1Symbol ? user2Symbol : user1Symbol);
   };
-  console.log(`currentPlayer: ${currentPlayer}`);
 
   return (
-    <BoardContainer size={size}>
-      {cells.map((value, index) => (
-        <Cell
-          key={index}
-          onClick={() => handleCellClick(index)}
-          value={value}
-          player1color={player1color}
-          player2color={player2color}
-        >
-          {value}
-        </Cell>
-      ))}
-    </BoardContainer>
+    <>
+      <BoardContainer size={size}>
+        {cells.map((value, index) => (
+          <Cell
+            key={index}
+            onClick={() => handleCellClick(index)}
+            value={value}
+            user1Symbol={user1Symbol}
+            player1color={player1color}
+            player2color={player2color}
+          >
+            {value}
+            {}
+          </Cell>
+        ))}
+      </BoardContainer>
+      <Des>
+        1P:
+        <PlayerColor player1color={player1color}>{user1Symbol}</PlayerColor>
+      </Des>
+      <Des>
+        2P:
+        <PlayerColor player2color={player2color}>{user2Symbol}</PlayerColor>
+      </Des>
+      <Des>현재 마크를 놓을 플레이어:{currentPlayer}</Des>
+      {gameOver && <p>{currentPlayer} Win!</p>}
+      {tie && <p>무승부</p>}
+    </>
   );
 };
 
@@ -95,16 +116,34 @@ const Cell = styled.button<{
   player1color?: string;
   player2color?: string;
   value?: string;
+  user1Symbol?: string;
 }>`
   display: flex;
   border-radius: 5px;
   background-color: #334e7e;
   font-size: 24px;
   color: ${(props) =>
-    props.value === "X" ? props.player1color : props.player2color};
+    props.value === props.user1Symbol
+      ? props.player1color
+      : props.player2color};
   justify-content: center;
   align-items: center;
   cursor: pointer;
+`;
+
+const Des = styled.div`
+  display: flex;
+  font-size: 24px;
+`;
+
+const PlayerColor = styled.div<{
+  player1color?: string;
+  player2color?: string;
+}>`
+  display: flex;
+  color: ${(props) =>
+    (props.player1color && props.player1color) ||
+    (props.player2color && props.player2color)};
 `;
 
 export default GridBoard;
