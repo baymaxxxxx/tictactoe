@@ -2,12 +2,12 @@ import { create } from "zustand";
 
 interface Props {
   size: number;
-  user1Symbol: string;
+  user1symbol: string;
   player1color: string;
   player2color: string;
   recordCells: string[];
   setRecordSize: (size: number) => void;
-  set1S: (user1Symbol: string) => void;
+  set1S: (user1symbol: string) => void;
   setP1C: (player1color: string) => void;
   setP2C: (player2color: string) => void;
   setRecordCells: (newCells: string[]) => void;
@@ -19,14 +19,19 @@ interface TimerStore {
   resetTimer: () => void;
 }
 
+interface TurnStore {
+  firstTurn: string;
+  setFirstTurn: (firstTurn: string) => void;
+}
+
 export const useCellsStore = create<Props>((set) => ({
   size: 3,
   setRecordSize: (size) => {
     set((state) => ({ ...state, size: size }));
   },
-  user1Symbol: "X",
-  set1S: (user1Symbol) => {
-    set((state) => ({ ...state, user1Symbol: user1Symbol }));
+  user1symbol: "X",
+  set1S: (user1symbol) => {
+    set((state) => ({ ...state, user1symbol: user1symbol }));
   },
   player1color: "#2196f3",
   setP1C: (player1color) => {
@@ -51,4 +56,11 @@ export const useTimerStore = create<TimerStore>((set) => ({
     set(() => ({
       timer: 0,
     })),
+}));
+
+export const useFirstTurn = create<TurnStore>((set) => ({
+  firstTurn: "1P",
+  setFirstTurn: (firstTurn) => {
+    set((state) => ({ ...state, firstTurn: firstTurn }));
+  },
 }));
