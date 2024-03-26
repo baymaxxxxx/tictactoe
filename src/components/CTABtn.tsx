@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router";
+import { useTimerStore } from "store";
 import styled from "styled-components";
 
 interface Params {
@@ -16,10 +17,12 @@ interface Props {
 
 const CTABtn = ({ children, path, params }: Props) => {
   const navigate = useNavigate();
+  const { resetTimer } = useTimerStore();
 
   const goto = (path: string, params?: Params) => {
     // params ? navigate(path, { state: params }) : navigate(path);
     navigate(path, params ? { state: params } : undefined);
+    resetTimer();
   };
   return (
     <Button type="button" onClick={() => goto(path, params)}>

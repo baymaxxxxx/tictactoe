@@ -33,6 +33,7 @@ const GameSettings = () => {
 
   return (
     <Container>
+      <Title>게임 설정</Title>
       <Des>게임보드 크기</Des>
       <SettingWrap>
         <Input
@@ -89,9 +90,28 @@ const Container = styled.div`
   width: 375px;
 `;
 
+const Title = styled.h3`
+  text-align: center;
+`;
+
+const Des = styled.p`
+  padding-right: 15px;
+  color: black;
+  font-size: 17px;
+  text-align: left;
+`;
+
 const SettingWrap = styled.div`
   display: flex;
   padding-left: 5px;
+`;
+
+const Input = styled.input`
+  width: 40px;
+  padding: 10px;
+  margin: 6px;
+  border-radius: 5px;
+  font-size: 16px;
 `;
 
 const PlayerWrap = styled.div`
@@ -104,21 +124,6 @@ const ColorText = styled.div<{ color?: string }>`
   border-right: solid 1px black;
   margin: 0 15px 0 0;
   color: ${(props) => props.color};
-`;
-
-const Des = styled.p`
-  padding-right: 15px;
-  color: black;
-  font-size: 17px;
-  text-align: left;
-`;
-
-const Input = styled.input`
-  width: 40px;
-  padding: 10px;
-  margin: 6px;
-  border-radius: 5px;
-  font-size: 16px;
 `;
 
 export default GameSettings;

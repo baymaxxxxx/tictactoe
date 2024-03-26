@@ -1,12 +1,8 @@
-import CTABtn from "components/CTABtn";
-import GridBoard from "components/GridBoard";
 import { useLocation } from "react-router-dom";
+import { styled } from "styled-components";
+import GridBoard from "components/GridBoard";
+import CTABtn from "components/CTABtn";
 
-/**
- * 2. 두 플레이어에 대한 정보: 무르기 횟수
- * 3. 현재 남은 시간
- * 5. 종료가 되면 게임기록
- */
 const GameScreen = () => {
   const { state } = useLocation();
   const { size, player1color, player2color, user1Symbol, user2Symbol } = state;
@@ -14,7 +10,7 @@ const GameScreen = () => {
 
   return (
     <>
-      GameScreen
+      <Title>게임 화면</Title>
       <GridBoard
         size={boardSize}
         player1color={player1color}
@@ -26,5 +22,9 @@ const GameScreen = () => {
     </>
   );
 };
+
+const Title = styled.h3`
+  text-align: center;
+`;
 
 export default GameScreen;
