@@ -1,33 +1,33 @@
 import { useEffect, useState } from "react";
 import styled from "styled-components";
-import { useCellsStore, useTimerStore } from "store";
+import { useCellsStore, useFirstTurn, useTimerStore } from "store";
 interface Props {
   size: number;
   player1color: string;
   player2color: string;
-  user1Symbol: string;
-  user2Symbol: string;
+  user1symbol: string;
+  user2symbol: string;
 }
 
 const GridBoard = ({
   size,
   player1color,
   player2color,
-  user1Symbol,
-  user2Symbol,
+  user1symbol,
+  user2symbol,
 }: Props) => {
   const [cells, setCells] = useState(Array(size * size).fill(""));
   const [p1moveHistory, setP1moveHistory] = useState<number[]>([]);
   const [p2moveHistory, setP2moveHistory] = useState<number[]>([]);
-  const [currentPlayer, setCurrentPlayer] = useState(user1Symbol);
+  const [currentPlayer, setCurrentPlayer] = useState(user1symbol);
   const [isClickPending, setIsClickPending] = useState(true);
   const [isClickRandom, setIsClickRandom] = useState(true);
   const [gameOver, setGameOver] = useState<boolean>(false);
   const [tie, setTie] = useState<boolean>(false);
 
   const [undoCounts, setUndoCounts] = useState<{ [player: string]: number }>({
-    [user1Symbol]: 3,
-    [user2Symbol]: 3,
+    [user1symbol]: 3,
+    [user2symbol]: 3,
   });
 
   const [intervalId, setIntervalId] = useState<NodeJS.Timer | undefined>(
@@ -36,12 +36,14 @@ const GridBoard = ({
   const { setRecordCells, setRecordSize, set1S, setP1C, setP2C } =
     useCellsStore();
   const { timer, startTimer, resetTimer } = useTimerStore();
+  const { firstTurn } = useFirstTurn();
 
   useEffect(() => {
     setRecordSize(size);
-    set1S(user1Symbol);
+    set1S(user1symbol);
     setP1C(player1color);
     setP2C(player2color);
+    initFirstTurn();
   }, [size]);
 
   useEffect(() => {
@@ -61,6 +63,12 @@ const GridBoard = ({
     }
   }, [timer]);
 
+  const initFirstTurn = () => {
+    if (firstTurn === "2P") {
+      setCurrentPlayer(user2symbol);
+    }
+  };
+
   const stopTimer = () => {
     if (intervalId) {
       clearInterval(intervalId);
@@ -75,7 +83,7 @@ const GridBoard = ({
 
     if (!gameOver) {
       setCurrentPlayer(
-        currentPlayer === user1Symbol ? user2Symbol : user1Symbol
+        currentPlayer === user1symbol ? user2symbol : user1symbol
       );
     }
 
@@ -101,7 +109,7 @@ const GridBoard = ({
     setCells(newCells);
     setIsClickPending(false);
 
-    if (currentPlayer === user1Symbol) {
+    if (currentPlayer === user1symbol) {
       setP1moveHistory([...p1moveHistory, randomIndex]);
     } else {
       setP2moveHistory([...p2moveHistory, randomIndex]);
@@ -158,10 +166,6 @@ const GridBoard = ({
     return false;
   };
 
-  const handleDone = () => {
-    setIsClickPending(true);
-  };
-
   const handleCellClick = (index: number) => {
     if (!isClickPending || gameOver || cells[index] !== "") return;
     setIsClickPending(false);
@@ -169,7 +173,7 @@ const GridBoard = ({
     newCells[index] = currentPlayer;
     setCells(newCells);
 
-    if (currentPlayer === user1Symbol) {
+    if (currentPlayer === user1symbol) {
       const newMoveHistory = [...p1moveHistory];
       newMoveHistory.push(index);
       setP1moveHistory(newMoveHistory);
@@ -194,20 +198,24 @@ const GridBoard = ({
 
   const handleUndo = () => {
     if (undoCounts[currentPlayer] <= 0 || gameOver) return;
-    setIsClickPending(true);
-    setIsClickRandom(true);
+    if (!isClickPending) {
+      setIsClickPending(true);
+      setIsClickRandom(true);
 
-    const lastMoveIndex =
-      currentPlayer === user1Symbol ? p1moveHistory.pop() : p2moveHistory.pop();
+      const lastMoveIndex =
+        currentPlayer === user1symbol
+          ? p1moveHistory.pop()
+          : p2moveHistory.pop();
 
-    if (lastMoveIndex !== undefined) {
-      const newCells = [...cells];
-      newCells[lastMoveIndex] = "";
-      setCells(newCells);
+      if (lastMoveIndex !== undefined) {
+        const newCells = [...cells];
+        newCells[lastMoveIndex] = "";
+        setCells(newCells);
 
-      const newUndoCounts = { ...undoCounts };
-      newUndoCounts[currentPlayer] -= 1;
-      setUndoCounts(newUndoCounts);
+        const newUndoCounts = { ...undoCounts };
+        newUndoCounts[currentPlayer] -= 1;
+        setUndoCounts(newUndoCounts);
+      }
     }
   };
 
@@ -219,7 +227,7 @@ const GridBoard = ({
             key={index}
             onClick={() => handleCellClick(index)}
             value={value}
-            user1Symbol={user1Symbol}
+            user1symbol={user1symbol}
             player1color={player1color}
             player2color={player2color}
           >
@@ -230,27 +238,36 @@ const GridBoard = ({
       </BoardContainer>
       <Des>
         1P:
-        <PlayerColor player1color={player1color}>{user1Symbol}</PlayerColor>
-        (남은 무르기 횟수: {undoCounts[user1Symbol]})
+        <PlayerColor player1color={player1color}>{user1symbol}</PlayerColor>
+        (남은 무르기 횟수: {undoCounts[user1symbol]})
+        {firstTurn === "1P" && <>선공</>}
       </Des>
       <Des>
         2P:
-        <PlayerColor player2color={player2color}>{user2Symbol}</PlayerColor>
-        (남은 무르기 횟수: {undoCounts[user2Symbol]})
+        <PlayerColor player2color={player2color}>{user2symbol}</PlayerColor>
+        (남은 무르기 횟수: {undoCounts[user2symbol]})
+        {firstTurn === "2P" && <>선공</>}
       </Des>
       <Des>현재 마크를 놓을 플레이어:{currentPlayer}</Des>
-      {gameOver && <p>{currentPlayer} Win!</p>}
-      {tie && <p>무승부</p>}
+      {gameOver && (
+        <Wrap>
+          <div>{currentPlayer} Win!</div>
+        </Wrap>
+      )}
+      {tie && (
+        <Wrap>
+          <div>무승부</div>
+        </Wrap>
+      )}
       {!gameOver && !tie && (
-        <Des>
+        <Wrap>
           <UndoButton
             onClick={handleUndo}
             disabled={undoCounts[currentPlayer] <= 0}
           >
             Undo
           </UndoButton>
-          <UndoButton onClick={handleDone}>Done</UndoButton>
-        </Des>
+        </Wrap>
       )}
       <TimerText>남은 시간: {15 - timer}</TimerText>
     </>
@@ -268,14 +285,14 @@ const Cell = styled.button<{
   player1color?: string;
   player2color?: string;
   value?: string;
-  user1Symbol?: string;
+  user1symbol?: string;
 }>`
   display: flex;
   border-radius: 5px;
   background-color: #334e7e;
   font-size: 24px;
   color: ${(props) =>
-    props.value === props.user1Symbol
+    props.value === props.user1symbol
       ? props.player1color
       : props.player2color};
   justify-content: center;
@@ -298,10 +315,16 @@ const PlayerColor = styled.div<{
     (props.player2color && props.player2color)};
 `;
 
+const Wrap = styled.div`
+  display: flex;
+  height: 50px;
+  align-items: center;
+`;
+
 const UndoButton = styled.button`
-  font-size: 16px;
   padding: 8px 16px;
   margin-top: 10px;
+  font-size: 16px;
   border-radius: 5px;
   cursor: pointer;
 `;

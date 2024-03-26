@@ -6,8 +6,8 @@ interface Params {
   size?: number;
   player1color?: string;
   player2color?: string;
-  user1Symbol?: string;
-  user2Symbol?: string;
+  user1symbol?: string;
+  user2symbol?: string;
 }
 interface Props {
   children: string;
@@ -20,7 +20,6 @@ const CTABtn = ({ children, path, params }: Props) => {
   const { resetTimer } = useTimerStore();
 
   const goto = (path: string, params?: Params) => {
-    // params ? navigate(path, { state: params }) : navigate(path);
     navigate(path, params ? { state: params } : undefined);
     resetTimer();
   };

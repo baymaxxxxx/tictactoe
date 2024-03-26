@@ -3,7 +3,7 @@ import { useCellsStore } from "store";
 import { styled } from "styled-components";
 
 const ViewRecordedGames = () => {
-  const { recordCells, size, user1Symbol, player1color, player2color } =
+  const { recordCells, size, user1symbol, player1color, player2color } =
     useCellsStore();
   return (
     <>
@@ -13,7 +13,7 @@ const ViewRecordedGames = () => {
           <Cell
             key={index}
             value={value}
-            user1Symbol={user1Symbol}
+            user1symbol={user1symbol}
             player1color={player1color}
             player2color={player2color}
           >
@@ -41,16 +41,16 @@ const Cell = styled.div<{
   player1color?: string;
   player2color?: string;
   value?: string;
-  user1Symbol?: string;
+  user1symbol?: string;
 }>`
   display: flex;
   border-radius: 5px;
   background-color: #334e7e;
   font-size: 24px;
   color: ${(props) =>
-    props.value === props.user1Symbol
+    props.value === props.user1symbol
       ? props.player1color
-      : props.player2color};
+      : props?.player2color};
   justify-content: center;
   align-items: center;
   cursor: pointer;

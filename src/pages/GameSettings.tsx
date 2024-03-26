@@ -2,18 +2,15 @@ import { useState } from "react";
 import styled from "styled-components";
 import CTABtn from "components/CTABtn";
 import SymbolColorSetting from "components/SymbolColorSetting";
-
-/**
- * 3. 선공 설정
- */
+import { useFirstTurn } from "store";
 
 const GameSettings = () => {
   const [boardSize, setBoardSize] = useState(3);
   const [player1color, setPlayer1color] = useState("#2196f3");
   const [player2color, setPlayer2color] = useState("#DB4455");
-  const [user1Symbol, setUser1Symbol] = useState<string | undefined>("X");
-  const [user2Symbol, setUser2Symbol] = useState<string | undefined>("O");
-
+  const [user1symbol, setUser1symbol] = useState<string | undefined>("X");
+  const [user2symbol, setUser2symbol] = useState<string | undefined>("O");
+  const { firstTurn, setFirstTurn } = useFirstTurn();
   const handleBoardSize = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = parseInt(e.target.value);
     if (!isNaN(newValue) && newValue > 2) {
@@ -23,10 +20,14 @@ const GameSettings = () => {
 
   const handleSymbolChange = (user: number, symbol: string) => {
     if (user === 1) {
-      setUser1Symbol(symbol);
+      setUser1symbol(symbol);
     } else if (user === 2) {
-      setUser2Symbol(symbol);
+      setUser2symbol(symbol);
     }
+  };
+
+  const handleTurnChange = (turn: "1P" | "2P") => {
+    setFirstTurn(turn);
   };
 
   const symbols = ["X", "O", "▵", "☐"];
@@ -42,14 +43,35 @@ const GameSettings = () => {
           onChange={handleBoardSize}
         />
       </SettingWrap>
+      <Des>선공 선택</Des>
+      <PlayerWrap>
+        <input
+          type="radio"
+          id="1P"
+          name="firstTurn"
+          value="1P"
+          checked={firstTurn === "1P"}
+          onChange={() => handleTurnChange("1P")}
+        />
+        <label htmlFor="1P">1P</label>
+        <input
+          type="radio"
+          id="2P"
+          name="firstTurn"
+          value="2P"
+          checked={firstTurn === "2P"}
+          onChange={() => handleTurnChange("2P")}
+        />
+        <label htmlFor="2P">2P</label>
+      </PlayerWrap>
       <Des>각 플레이어 설정</Des>
 
       <PlayerWrap>
-        <ColorText color={player1color}>1P: {user1Symbol}</ColorText>
+        <ColorText color={player1color}>1P: {user1symbol}</ColorText>
         <SymbolColorSetting
           symbols={symbols}
-          selectedSymbol={user1Symbol}
-          disableSymbol={user2Symbol}
+          selectedSymbol={user1symbol}
+          disableSymbol={user2symbol}
           onSymbolChange={(symbol) => handleSymbolChange(1, symbol)}
           colors={["#2196f3", "#ffc107", "#795548"]}
           selectedColor={player1color}
@@ -58,11 +80,11 @@ const GameSettings = () => {
       </PlayerWrap>
 
       <PlayerWrap>
-        <ColorText color={player2color}>2P: {user2Symbol}</ColorText>
+        <ColorText color={player2color}>2P: {user2symbol}</ColorText>
         <SymbolColorSetting
           symbols={symbols}
-          selectedSymbol={user2Symbol}
-          disableSymbol={user1Symbol}
+          selectedSymbol={user2symbol}
+          disableSymbol={user1symbol}
           onSymbolChange={(symbol) => handleSymbolChange(2, symbol)}
           colors={["#DB4455", "#9c27b0", "#009688"]}
           selectedColor={player2color}
@@ -76,8 +98,8 @@ const GameSettings = () => {
           size: boardSize,
           player1color: player1color,
           player2color: player2color,
-          user1Symbol: user1Symbol,
-          user2Symbol: user2Symbol,
+          user1symbol: user1symbol,
+          user2symbol: user2symbol,
         }}
       >
         시작
